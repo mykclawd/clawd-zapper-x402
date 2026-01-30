@@ -1,6 +1,6 @@
 const ZAPPER_API = 'https://public.zapper.xyz/graphql';
 
-export async function zapperQuery(query, variables = {}) {
+export async function zapperQuery(query: string, variables: Record<string, any> = {}) {
   const apiKey = process.env.ZAPPER_API_KEY;
   if (!apiKey) {
     throw new Error('ZAPPER_API_KEY not configured');

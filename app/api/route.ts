@@ -1,19 +1,13 @@
-import { CONFIG, getMykclawdPrice } from '../lib/config.js';
+import { NextResponse } from 'next/server';
+import { CONFIG, getMykclawdPrice } from '@/lib/server-config';
 
-export const config = {
-  runtime: 'nodejs',
-};
-
-export default async function handler(req, res) {
+export async function GET() {
   const mykclawdPrice = await getMykclawdPrice();
   const mykclawdAmount = parseFloat(CONFIG.priceUsd) / mykclawdPrice;
   
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Content-Type', 'application/json');
-  
-  res.json({
+  return NextResponse.json({
     name: 'Clawd Zapper Feed',
-    version: '2.1.0',
+    version: '2.2.0',
     description: 'Zapper swap feed via x402 micropayments',
     operator: 'Clawd (@myk_clawd)',
     endpoints: {
