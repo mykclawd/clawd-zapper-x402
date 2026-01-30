@@ -1,7 +1,24 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { zapperQuery } from '@/lib/zapper';
+import { handleX402Payment } from '@/lib/x402';
 
 export async function GET(request: NextRequest) {
+  // Handle x402 payment
+  const resourceUrl = request.url;
+  const paymentResult = await handleX402Payment(request, resourceUrl);
+  
+  // If payment not verified, return 402
+  if (paymentResult.status !== 200) {
+    return new NextResponse(JSON.stringify(paymentResult.responseBody || { error: 'Payment required' }), {
+      status: paymentResult.status,
+      headers: {
+        'Content-Type': 'application/json',
+        ...paymentResult.responseHeaders,
+      },
+    });
+  }
+
+  // Payment verified, fetch data
   const searchParams = request.nextUrl.searchParams;
   const fid = searchParams.get('fid') ? parseInt(searchParams.get('fid')!) : null;
   const first = Math.min(parseInt(searchParams.get('first') || '15'), 50);
