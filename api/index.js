@@ -1,14 +1,17 @@
 import { CONFIG, getMykclawdPrice } from '../lib/config.js';
 
 export const config = {
-  runtime: 'edge',
+  runtime: 'nodejs22.x',
 };
 
-export default async function handler(req) {
+export default async function handler(req, res) {
   const mykclawdPrice = await getMykclawdPrice();
   const mykclawdAmount = parseFloat(CONFIG.priceUsd) / mykclawdPrice;
   
-  const info = {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Content-Type', 'application/json');
+  
+  res.json({
     name: 'Clawd Zapper Feed',
     version: '2.1.0',
     description: 'Zapper swap feed via x402 micropayments',
@@ -48,13 +51,5 @@ export default async function handler(req) {
       },
     },
     docs: 'https://x402.org',
-  };
-  
-  return new Response(JSON.stringify(info, null, 2), {
-    status: 200,
-    headers: {
-      'Content-Type': 'application/json',
-      'Access-Control-Allow-Origin': '*',
-    },
   });
 }

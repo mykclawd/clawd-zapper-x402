@@ -2,17 +2,18 @@ import { handleX402Payment } from '../lib/x402.js';
 import { zapperQuery } from '../lib/zapper.js';
 
 export const config = {
-  runtime: 'edge',
+  runtime: 'nodejs22.x',
+  maxDuration: 30,
 };
 
-async function getRankings(params) {
-  const fid = params.get('fid') ? parseInt(params.get('fid')) : null;
-  const first = Math.min(parseInt(params.get('first')) || 15, 50);
+async function getRankings(query) {
+  const fid = query.fid ? parseInt(query.fid) : null;
+  const first = Math.min(parseInt(query.first) || 15, 50);
   
   const variables = { first };
   if (fid) variables.fid = fid;
   
-  const query = `
+  const gqlQuery = `
     query TokenRanking($first: Int, $fid: Int) {
       tokenRanking(first: $first, fid: $fid) {
         edges {
@@ -29,7 +30,7 @@ async function getRankings(params) {
     }
   `;
   
-  const result = await zapperQuery(query, variables);
+  const result = await zapperQuery(gqlQuery, variables);
   
   const rankings = result.data?.tokenRanking?.edges?.map(edge => ({
     symbol: edge.node.token.symbol,
@@ -45,17 +46,13 @@ async function getRankings(params) {
   return { rankings, count: rankings.length };
 }
 
-export default async function handler(req) {
+export default async function handler(req, res) {
   if (req.method === 'OPTIONS') {
-    return new Response(null, {
-      status: 204,
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'GET, OPTIONS',
-        'Access-Control-Allow-Headers': 'Content-Type, X-Payment, Payment-Signature',
-      },
-    });
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, X-Payment, Payment-Signature');
+    return res.status(204).end();
   }
   
-  return handleX402Payment(req, getRankings);
+  return handleX402Payment(req, res, getRankings);
 }
