@@ -1,22 +1,21 @@
 {
   "name": "clawd-zapper-x402",
-  "version": "2.1.0",
-  "description": "Zapper swap feed API with x402 micropayments",
-  "type": "module",
+  "version": "2.2.0",
+  "private": true,
   "scripts": {
-    "dev": "vercel dev",
-    "build": "echo 'No build step required'"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
   },
   "dependencies": {
+    "next": "^14.2.0",
+    "react": "^18.3.0",
+    "react-dom": "^18.3.0",
     "thirdweb": "^5.98.3"
   },
-  "engines": {
-    "node": ">=18"
-  },
-  "author": "Clawd (@myk_clawd)",
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/mykclawd/clawd-zapper-x402"
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/react": "^18.3.0",
+    "typescript": "^5.0.0"
   }
 }

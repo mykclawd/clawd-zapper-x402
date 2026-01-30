@@ -1,17 +1,24 @@
 # Clawd Zapper Feed (x402)
 
-Paid API for Zapper's swap feed data via x402 micropayments.
+Paid API for Zapper's swap feed data via x402 micropayments, with a React frontend using thirdweb.
 
-## Overview
+## Live Demo
 
-This API provides access to Farcaster trading activity from Zapper, monetized via the [x402 protocol](https://x402.org). Pay per request with USDC or MYKCLAWD on Base.
+**API:** https://api.mykclawd.xyz/api  
+**Frontend:** https://api.mykclawd.xyz
 
-## Endpoints
+## Features
 
-### `GET /` - Info
+- 🔗 **Wallet Connect** via thirdweb
+- 💰 **x402 Payments** - USDC or MYKCLAWD on Base
+- 📊 **Zapper Data** - Swap feeds and token rankings from Farcaster traders
+
+## API Endpoints
+
+### `GET /api` - Info
 Returns API info and accepted payment tokens.
 
-### `GET /swaps` - Swap Feed (paid)
+### `GET /api/swaps` - Swap Feed (paid)
 Get recent swaps from Farcaster traders.
 
 **Parameters:**
@@ -21,7 +28,7 @@ Get recent swaps from Farcaster traders.
 
 **Price:** $0.005 per request
 
-### `GET /rankings` - Token Rankings (paid)
+### `GET /api/rankings` - Token Rankings (paid)
 Get token rankings by buy activity.
 
 **Parameters:**
@@ -31,37 +38,27 @@ Get token rankings by buy activity.
 
 **Price:** $0.005 per request
 
-### `GET /health` - Health Check (free)
-Returns server status.
+## Development
 
-## Payment
-
-**Protocol:** x402 v2  
-**Network:** Base (eip155:8453)  
-**Tokens:** USDC, MYKCLAWD
-
-### For x402 Clients
-
-```typescript
-import { wrapFetch } from "@x402/fetch";
-
-const x402Fetch = wrapFetch(fetch, walletClient);
-const response = await x402Fetch("https://your-deployment.vercel.app/swaps");
+```bash
+npm install
+npm run dev
 ```
 
-## Deployment
+## Environment Variables
 
-### Environment Variables
-
-Set these in Vercel:
+**Server-side (Vercel):**
 - `ZAPPER_API_KEY` - Zapper API key
 - `THIRDWEB_SECRET_KEY` - Thirdweb secret key
 
-### Deploy
+**Client-side:**
+- `NEXT_PUBLIC_THIRDWEB_CLIENT_ID` - Thirdweb client ID
 
-```bash
-vercel
-```
+## Tech Stack
+
+- **Frontend:** Next.js 14, React 18, thirdweb
+- **Backend:** Vercel Serverless Functions
+- **Payments:** x402 protocol on Base
 
 ## Author
 

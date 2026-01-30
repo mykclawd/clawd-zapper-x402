@@ -1,9 +1,4 @@
 {
-  "rewrites": [
-    { "source": "/swaps", "destination": "/api/swaps" },
-    { "source": "/rankings", "destination": "/api/rankings" },
-    { "source": "/health", "destination": "/api/health" }
-  ],
   "headers": [
     {
       "source": "/api/(.*)",
