@@ -1,20 +1,17 @@
 {
-  "version": 2,
-  "builds": [
-    { "src": "api/**/*.js", "use": "@vercel/node" }
+  "rewrites": [
+    { "source": "/", "destination": "/api" },
+    { "source": "/swaps", "destination": "/api/swaps" },
+    { "source": "/rankings", "destination": "/api/rankings" },
+    { "source": "/health", "destination": "/api/health" }
   ],
-  "routes": [
-    { "src": "^/$", "dest": "/api" },
-    { "src": "^/swaps$", "dest": "/api/swaps" },
-    { "src": "^/rankings$", "dest": "/api/rankings" },
-    { "src": "^/health$", "dest": "/api/health" },
+  "headers": [
     {
-      "src": "^/api/(.*)",
-      "headers": {
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Expose-Headers": "X-PAYMENT,X-PAYMENT-RESPONSE,PAYMENT-REQUIRED,PAYMENT-RESPONSE"
-      },
-      "continue": true
+      "source": "/api/(.*)",
+      "headers": [
+        { "key": "Access-Control-Allow-Origin", "value": "*" },
+        { "key": "Access-Control-Expose-Headers", "value": "X-PAYMENT,X-PAYMENT-RESPONSE,PAYMENT-REQUIRED,PAYMENT-RESPONSE" }
+      ]
     }
   ]
 }
