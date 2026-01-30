@@ -1,13 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import { ConnectButton, useActiveAccount } from "thirdweb/react";
+import { ConnectButton, useActiveAccount, useActiveWalletChain } from "thirdweb/react";
 import { base } from "thirdweb/chains";
 import { client } from "@/lib/client";
-import { x402Fetch } from "thirdweb/x402";
+import { wrapFetch } from "@x402/fetch";
+import { createWalletClient, custom, http } from "viem";
 
 export default function Home() {
   const account = useActiveAccount();
+  const chain = useActiveWalletChain();
   const [result, setResult] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -22,39 +24,33 @@ export default function Home() {
     setLoading(true);
     setError(null);
     setPaymentInfo(null);
+    setResult(null);
 
     try {
-      // Use x402Fetch which automatically handles payment
-      const response = await x402Fetch(`/api/${endpoint}?first=5`, {
-        client,
-        wallet: account,
+      // Create viem wallet client from the connected account
+      const walletClient = createWalletClient({
+        account: account.address as `0x${string}`,
+        chain: base,
+        transport: typeof window !== 'undefined' && (window as any).ethereum 
+          ? custom((window as any).ethereum)
+          : http(),
       });
+
+      // Wrap fetch with x402 payment handling
+      const x402Fetch = wrapFetch(fetch, walletClient);
+      
+      const response = await x402Fetch(`/api/${endpoint}?first=5`);
 
       if (response.ok) {
         const data = await response.json();
         setResult(data);
-      } else if (response.status === 402) {
-        // Payment header available for display
-        const paymentHeader = response.headers.get("payment-required");
-        if (paymentHeader) {
-          try {
-            const decoded = JSON.parse(atob(paymentHeader));
-            setPaymentInfo(decoded);
-            setError("Payment required - check details below");
-          } catch {
-            setError("Payment required");
-          }
-        }
       } else {
-        setError(`Error: ${response.status}`);
+        const text = await response.text();
+        setError(`Error ${response.status}: ${text}`);
       }
     } catch (e: any) {
-      // If payment was made but something failed
-      if (e.message?.includes("payment")) {
-        setError(`Payment error: ${e.message}`);
-      } else {
-        setError(e.message);
-      }
+      console.error("Fetch error:", e);
+      setError(e.message || "Unknown error");
     }
     setLoading(false);
   };
@@ -129,29 +125,10 @@ export default function Home() {
             background: "#1a1a2e",
             borderRadius: "8px",
             marginBottom: "1rem",
-            borderLeft: "4px solid #f59e0b",
+            borderLeft: "4px solid #ef4444",
           }}
         >
-          <p style={{ color: "#f59e0b" }}>{error}</p>
-        </div>
-      )}
-
-      {paymentInfo && (
-        <div
-          style={{
-            padding: "1rem",
-            background: "#1a1a2e",
-            borderRadius: "8px",
-            marginBottom: "1rem",
-            borderLeft: "4px solid #7c3aed",
-          }}
-        >
-          <h3 style={{ color: "#7c3aed", marginBottom: "0.5rem" }}>Payment Details</h3>
-          <p style={{ color: "#888", fontSize: "0.875rem" }}>
-            Network: {paymentInfo.accepts?.[0]?.network}<br/>
-            Amount: {(parseInt(paymentInfo.accepts?.[0]?.maxAmountRequired || "0") / 1e6).toFixed(4)} USDC<br/>
-            Pay To: {paymentInfo.accepts?.[0]?.payTo?.slice(0, 10)}...
-          </p>
+          <p style={{ color: "#ef4444" }}>{error}</p>
         </div>
       )}
 
@@ -162,8 +139,10 @@ export default function Home() {
             background: "#1a1a2e",
             borderRadius: "8px",
             overflow: "auto",
+            borderLeft: "4px solid #22c55e",
           }}
         >
+          <p style={{ color: "#22c55e", marginBottom: "0.5rem" }}>✓ Payment successful!</p>
           <pre style={{ fontSize: "0.875rem" }}>
             {JSON.stringify(result, null, 2)}
           </pre>
