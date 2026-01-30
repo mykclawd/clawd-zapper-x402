@@ -2,7 +2,7 @@ import { handleX402Payment } from '../lib/x402.js';
 import { zapperQuery } from '../lib/zapper.js';
 
 export const config = {
-  runtime: 'nodejs22.x',
+  runtime: 'nodejs',
   maxDuration: 30,
 };
 
