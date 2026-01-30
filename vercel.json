@@ -1,0 +1,21 @@
+{
+  "functions": {
+    "api/**/*.js": {
+      "runtime": "@vercel/node@3"
+    }
+  },
+  "rewrites": [
+    { "source": "/swaps", "destination": "/api/swaps" },
+    { "source": "/rankings", "destination": "/api/rankings" },
+    { "source": "/health", "destination": "/api/health" }
+  ],
+  "headers": [
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        { "key": "Access-Control-Allow-Origin", "value": "*" },
+        { "key": "Access-Control-Expose-Headers", "value": "X-PAYMENT,X-PAYMENT-RESPONSE,PAYMENT-REQUIRED,PAYMENT-RESPONSE" }
+      ]
+    }
+  ]
+}
