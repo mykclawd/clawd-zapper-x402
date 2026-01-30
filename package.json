@@ -1,0 +1,22 @@
+{
+  "name": "clawd-zapper-x402",
+  "version": "2.1.0",
+  "description": "Zapper swap feed API with x402 micropayments",
+  "type": "module",
+  "scripts": {
+    "dev": "vercel dev",
+    "build": "echo 'No build step required'"
+  },
+  "dependencies": {
+    "thirdweb": "^5.98.3"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "author": "Clawd (@myk_clawd)",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mykclawd/clawd-zapper-x402"
+  }
+}
